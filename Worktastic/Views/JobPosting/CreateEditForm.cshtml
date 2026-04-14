@@ -4,6 +4,7 @@
 }
 <div class="container mt-5">
     <form asp-controller="JobPosting" asp-action="CreateEdit" method="post" enctype="multipart/form-data">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
         <input type="hidden" asp-for="Id" />
 
         <div class="card shadow-lg border-0 rounded-4">
@@ -15,51 +16,62 @@
                     <div class="col-md-6">
                         <label asp-for="JobTitle" class="form-label">Jobbezeichnung</label>
                         <input class="form-control form-control-lg" asp-for="JobTitle" type="text" placeholder="Bitte trage die Jobbezeichnung ein" />
+                        <span asp-validation-for="JobTitle" class="text-danger small"></span>
                     </div>
                     <div class="col-md-6">
                         <label asp-for="JobLocation" class="form-label">Ort der Beschäftigung</label>
                         <input class="form-control form-control-lg" asp-for="JobLocation" type="text" placeholder="Bitte trage einen Ort ein" />
+                        <span asp-validation-for="JobLocation" class="text-danger small"></span>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label asp-for="JobDescription" class="form-label">Job Beschreibung</label>
                     <textarea class="form-control form-control-lg" asp-for="JobDescription" placeholder="Bitte Beschreibung eintragen"></textarea>
+                    <span asp-validation-for="JobDescription" class="text-danger small"></span>
                 </div>
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label asp-for="Salary" class="form-label">Gehalt</label>
                         <input class="form-control form-control-lg" asp-for="Salary" type="number" placeholder="Wie viel Jahresgehalt?" />
+                        <span asp-validation-for="Salary" class="text-danger small"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="StartDate" class="form-label">Start Datum</label>
+                        <label asp-for="StartDate" class="form-label">Startdatum</label>
                         <input class="form-control form-control-lg" asp-for="StartDate" type="date" />
+                        <span asp-validation-for="StartDate" class="text-danger small"></span>
                     </div>
                 </div>
                 <hr />
 
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
-                        <label asp-for="ContactName" class="form-label">Kontakt Name</label>
+                        <label asp-for="ContactName" class="form-label">Ansprechpartner</label>
                         <input class="form-control form-control-lg" asp-for="ContactName" type="text" placeholder="Wer?" />
+                        <span asp-validation-for="ContactName" class="text-danger small"></span>
                     </div>
                     <div class="col-md-6">
-                        <label asp-for="ContactWebsite" class="form-label">Kontakt Webseite</label>
+                        <label asp-for="ContactWebsite" class="form-label">Unternehmenswebseite</label>
                         <input class="form-control form-control-lg" asp-for="ContactWebsite" type="url" placeholder="Website" />
+                        <span asp-validation-for="ContactWebsite" class="text-danger small"></span>
                     </div>
                 </div>
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label asp-for="ContactEmail" class="form-label">Kontakt Email</label>
                         <input class="form-control form-control-lg" asp-for="ContactEmail" type="email" placeholder="Email" />
+                        <span asp-validation-for="ContactEmail" class="text-danger small"></span>
                     </div>
                     <div class="col-md-6">
                         <label asp-for="ContactPhone" class="form-label">Kontakt Telefon</label>
                         <input class="form-control form-control-lg" asp-for="ContactPhone" type="tel" placeholder="Telefon" />
+                        <span asp-validation-for="ContactPhone" class="text-danger small"></span>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label class="mb-1">Firmenlogo hochladen</label>
                     <input type="file" name="CompanyLogo" class="form-control" />
+                    <span asp-validation-for="CompanyLogo" class="text-danger small"></span>
+
                 </div>
             </div>
             <div class="card-footer bg-transparent border-0">
