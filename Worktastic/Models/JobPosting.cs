@@ -13,6 +13,7 @@
         public string? ContactPhone { get; set; }
         public string? ContactWebsite { get; set; }
         public byte[]? CompanyLogo { get; set; }
+
         public string? OwnerName { get; set; }
     }
 }
