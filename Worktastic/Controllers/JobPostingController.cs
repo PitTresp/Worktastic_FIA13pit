@@ -13,12 +13,21 @@ namespace Worktastic.Controllers
         }
         public IActionResult Index()
         {
-            return View();
+            var jobsFromDb = _context.JobPosts.Where(x => x.OwnerName == User.Identity.Name).ToList();
+            return View(jobsFromDb);
         }
 
         public IActionResult CreateEditForm(int id)
         {
-            //TODO
+            if (id != 0)
+            {
+                var jobFromDb = _context.JobPosts.SingleOrDefault(x => x.Id == id);
+                if (jobFromDb == null)
+                {
+                    return NotFound();
+                }
+                return View(jobFromDb);
+            }
             return View();
         }
 
@@ -51,6 +60,21 @@ namespace Worktastic.Controllers
             }
             _context.SaveChanges();
             return RedirectToAction("Index");
+        }
+
+        public IActionResult Delete(int id)
+        {
+            if (id == 0)
+                return BadRequest();
+            else
+            {
+                var jobFromDb = _context.JobPosts.SingleOrDefault(x => x.Id == id);
+                if (jobFromDb == null)
+                    return NotFound();
+                _context.JobPosts.Remove(jobFromDb);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
         }
     }
 }
