@@ -36,27 +36,23 @@
 
 @section Scripts {
     <script>
-        $(document).ready( function () {
+        $(document).ready(function () {
             $('#AdminTabelle').DataTable();
-} );
+        });
 
-         function deleteInserat(id) {
-             Swal.fire({
-                title: "Do you want to save the changes?",
-                showDenyButton: true,
+        function deleteInserat(id) {
+            Swal.fire({
+                title: "Inserat wirklich löschen?",
+                text: "Dieser Vorgang kann nicht rückgängig gemacht werden.",
+                icon: "warning",
                 showCancelButton: true,
-                confirmButtonText: "Save",
-                denyButtonText: `Don't save`
-                }).then((result) => {
-                /* Read more about isConfirmed, isDenied below */
-                if (result.isConfirmed) Swal.fire("Saved!", "", "success");
-                else if (result.isDenied) Swal.fire("Changes are not saved", "", "info");
-                });
-           }
-
-      
-
-      
+                confirmButtonText: "Ja, löschen",
+                cancelButtonText: "Abbrechen"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '@Url.Action("Delete", "JobPosting")?id=' + id;
+                }
+            });
+        }
     </script>
-        
 }

@@ -31,50 +31,89 @@ namespace Worktastic.Controllers
             return View();
         }
 
-        public IActionResult CreateEdit(JobPosting jobPosting, IFormFile CompanyLogo)
+        [HttpPost]
+        public IActionResult CreateEdit(JobPosting jobPosting, IFormFile? CompanyLogo)
         {
-            jobPosting.OwnerName = User.Identity.Name;
-            if(CompanyLogo != null)
+            jobPosting.OwnerName = User.Identity?.Name;
+
+            if (jobPosting.StartDate.Date < DateTime.Today)
             {
-                using(var memoryStream = new MemoryStream())
+                ModelState.AddModelError("StartDate", "Das Startdatum darf nicht in der Vergangenheit liegen.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View("CreateEditForm", jobPosting);
+            }
+
+            if (jobPosting.Id == 0)
+            {
+                if (CompanyLogo != null)
                 {
-                    CompanyLogo.CopyTo(memoryStream);
-                    var byteArray = memoryStream.ToArray();
-                    jobPosting.CompanyLogo = byteArray;
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        CompanyLogo.CopyTo(memoryStream);
+                        jobPosting.CompanyLogo = memoryStream.ToArray();
+                    }
                 }
-            }
-            
-            if(jobPosting == null)
-            {
-                return NotFound();
-            }
-            if(jobPosting.Id == 0)
+
                 _context.JobPosts.Add(jobPosting);
+            }
             else
             {
-               var jobFromDB = _context.JobPosts.SingleOrDefault(x => x.Id == jobPosting.Id);
-                if(jobFromDB == null)
+                var jobFromDb = _context.JobPosts.SingleOrDefault(x => x.Id == jobPosting.Id);
+
+                if (jobFromDb == null)
                 {
                     return NotFound();
                 }
+
+                if (jobFromDb.OwnerName != User.Identity?.Name)
+                {
+                    return Forbid();
+                }
+
+                jobFromDb.JobTitle = jobPosting.JobTitle;
+                jobFromDb.JobLocation = jobPosting.JobLocation;
+                jobFromDb.JobDescription = jobPosting.JobDescription;
+                jobFromDb.Salary = jobPosting.Salary;
+                jobFromDb.StartDate = jobPosting.StartDate;
+                jobFromDb.ContactName = jobPosting.ContactName;
+                jobFromDb.ContactWebsite = jobPosting.ContactWebsite;
+                jobFromDb.ContactEmail = jobPosting.ContactEmail;
+                jobFromDb.ContactPhone = jobPosting.ContactPhone;
+                jobFromDb.OwnerName = User.Identity?.Name;
+
+                if (CompanyLogo != null)
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        CompanyLogo.CopyTo(memoryStream);
+                        jobFromDb.CompanyLogo = memoryStream.ToArray();
+                    }
+                }
             }
+
             _context.SaveChanges();
             return RedirectToAction("Index");
         }
-
         public IActionResult Delete(int id)
         {
             if (id == 0)
                 return BadRequest();
-            else
-            {
-                var jobFromDb = _context.JobPosts.SingleOrDefault(x => x.Id == id);
-                if (jobFromDb == null)
-                    return NotFound();
-                _context.JobPosts.Remove(jobFromDb);
-                _context.SaveChanges();
-                return RedirectToAction("Index");
-            }
+
+            var jobFromDb = _context.JobPosts.SingleOrDefault(x => x.Id == id);
+
+            if (jobFromDb == null)
+                return NotFound();
+
+            if (jobFromDb.OwnerName != User.Identity?.Name)
+                return Forbid();
+
+            _context.JobPosts.Remove(jobFromDb);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
         }
     }
 }
