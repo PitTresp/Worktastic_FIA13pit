@@ -63,6 +63,16 @@ namespace Worktastic.Controllers
                 {
                     return NotFound();
                 }
+                //jobFromDb.Ownername = jobPosting.OwnerName; nicht machen: weil Eigentümer wird im Nachhinein geändert,
+                //bei Rollen wird dann im schlimmsten Fall der admin als Eigentümer eingetragen
+                jobFromDB.JobTitle = jobPosting.JobTitle;
+                jobFromDB.JobDescription = jobPosting.JobDescription;
+                jobFromDB.ContactName = jobPosting.ContactName;
+                jobFromDB.ContactEmail = jobPosting.ContactEmail;
+                jobFromDB.ContactPhone = jobPosting.ContactPhone;
+                jobFromDB.ContactWebsite = jobPosting.ContactWebsite;
+                jobFromDB.Salary = jobPosting.Salary;
+                jobFromDB.StartDate = jobPosting.StartDate;
             }
             _context.SaveChanges();
             return RedirectToAction("Index");
