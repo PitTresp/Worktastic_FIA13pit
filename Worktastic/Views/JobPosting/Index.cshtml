@@ -40,19 +40,33 @@
             $('#AdminTabelle').DataTable();
         });
 
-        function deleteInserat(id) {
+
+        function deleteInserat(jobPostingId) {
             Swal.fire({
-                title: "Inserat wirklich löschen?",
-                text: "Dieser Vorgang kann nicht rückgängig gemacht werden.",
+                title: "Wollen Sie das Inserat wirklich löschen?",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Ja, löschen",
                 cancelButtonText: "Abbrechen"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    window.location.href = '@Url.Action("Delete", "JobPosting")?id=' + id;
+                    $.ajax({
+                        type: "POST",
+                        url: "@Url.Action("Delete", "JobPosting")",
+                        data: { id : jobPostingId },
+                        success: function () {
+                            Swal.fire("Inserat gelöscht", "", "success").then(() => {
+                                location.reload();
+                            });
+                        },
+                        error: function () {
+                            Swal.fire("Ups, es ist was schiefgelaufen!", "", "error");
+                        }
+                    });      
                 }
             });
         }
+
     </script>
+        
 }

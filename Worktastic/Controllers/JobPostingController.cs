@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Worktastic.Data;
 using Worktastic.Models;
 
 namespace Worktastic.Controllers
 {
+    [Authorize]
     public class JobPostingController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -26,14 +28,26 @@ namespace Worktastic.Controllers
                 {
                     return NotFound();
                 }
+                if (User.Identity.Name != jobFromDb.OwnerName)
+                {
+                    return Forbid();
+                }
                 return View(jobFromDb);
             }
-            return View();
+            return View(new JobPosting());
         }
 
         [HttpPost]
-        public IActionResult CreateEdit(JobPosting jobPosting, IFormFile? CompanyLogo)
+        public IActionResult CreateEdit(JobPosting jobPosting, IFormFile? companyLogoFile)
         {
+            Console.WriteLine("POST CreateEdit wurde erreicht");
+            Console.WriteLine($"Id: {jobPosting.Id}");
+            Console.WriteLine($"JobTitle: {jobPosting.JobTitle}");
+            Console.WriteLine($"JobLocation: {jobPosting.JobLocation}");
+            Console.WriteLine($"ContactName: {jobPosting.ContactName}");
+            Console.WriteLine($"ContactEmail: {jobPosting.ContactEmail}");
+            Console.WriteLine($"companyLogoFile null? {companyLogoFile == null}");
+
             jobPosting.OwnerName = User.Identity?.Name;
 
             if (jobPosting.StartDate.Date < DateTime.Today)
@@ -42,17 +56,26 @@ namespace Worktastic.Controllers
             }
 
             if (!ModelState.IsValid)
+
             {
+                foreach (var entry in ModelState)
+                {
+                    foreach (var error in entry.Value.Errors)
+                    {
+                        Console.WriteLine($"{entry.Key}: {error.ErrorMessage}");
+                    }
+                }
+
                 return View("CreateEditForm", jobPosting);
             }
 
             if (jobPosting.Id == 0)
             {
-                if (CompanyLogo != null)
+                if (companyLogoFile != null)
                 {
                     using (var memoryStream = new MemoryStream())
                     {
-                        CompanyLogo.CopyTo(memoryStream);
+                        companyLogoFile.CopyTo(memoryStream);
                         jobPosting.CompanyLogo = memoryStream.ToArray();
                     }
                 }
@@ -84,19 +107,21 @@ namespace Worktastic.Controllers
                 jobFromDb.ContactPhone = jobPosting.ContactPhone;
                 jobFromDb.OwnerName = User.Identity?.Name;
 
-                if (CompanyLogo != null)
+                if (companyLogoFile != null)
                 {
                     using (var memoryStream = new MemoryStream())
                     {
-                        CompanyLogo.CopyTo(memoryStream);
+                        companyLogoFile.CopyTo(memoryStream);
                         jobFromDb.CompanyLogo = memoryStream.ToArray();
                     }
                 }
             }
-
+            Console.WriteLine("SaveChanges wird jetzt ausgeführt");
             _context.SaveChanges();
+            Console.WriteLine("SaveChanges wurde ausgeführt");
             return RedirectToAction("Index");
         }
+        [HttpPost]
         public IActionResult Delete(int id)
         {
             if (id == 0)
@@ -113,7 +138,25 @@ namespace Worktastic.Controllers
             _context.JobPosts.Remove(jobFromDb);
             _context.SaveChanges();
 
-            return RedirectToAction("Index");
+            return Ok();
         }
+        //public IActionResult Delete(int id)
+        //{
+        //    if (id == 0)
+        //        return BadRequest();
+
+        //    var jobFromDb = _context.JobPosts.SingleOrDefault(x => x.Id == id);
+
+        //    if (jobFromDb == null)
+        //        return NotFound();
+
+        //    if (jobFromDb.OwnerName != User.Identity?.Name)
+        //        return Forbid();
+
+        //    _context.JobPosts.Remove(jobFromDb);
+        //    _context.SaveChanges();
+
+        //    return RedirectToAction("Index");
+        //}
     }
 }
