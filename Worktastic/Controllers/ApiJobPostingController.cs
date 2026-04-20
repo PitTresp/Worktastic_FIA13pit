@@ -46,6 +46,49 @@ namespace Worktastic.Controllers
             _context.SaveChanges();
 
             return Ok("Inserat eingetragen");
+          
+        }
+
+        [HttpDelete("Delete")]
+        public IActionResult Delete(int id)
+        {
+            var JobFromDb = _context.JobPosts.SingleOrDefault(x => x.Id == id);
+
+            if (JobFromDb == null) return NotFound();
+
+            _context.JobPosts.Remove(JobFromDb);
+            _context.SaveChanges();
+
+            return Ok("Inserat gelöscht!");
+        }
+
+        [HttpPut("Update")]
+        public IActionResult Update(JobPosting job)
+        {
+            if (job.Id == 0) return BadRequest("Inserat hat keine Id");
+            var JobFromDb = _context.JobPosts.SingleOrDefault(x => x.Id == job.Id);
+
+            if (JobFromDb == null) return NotFound();
+
+            var jobFromDB = _context.JobPosts.SingleOrDefault(x => x.Id == job.Id);
+            if (jobFromDB == null)
+            {
+                return NotFound();
+            }
+            //jobFromDb.Ownername = jobPosting.OwnerName; nicht machen: weil Eigentümer wird im Nachhinein geändert,
+            //bei Rollen wird dann im schlimmsten Fall der admin als Eigentümer eingetragen
+            jobFromDB.JobTitle = job.JobTitle;
+            jobFromDB.JobDescription = job.JobDescription;
+            jobFromDB.ContactName = job.ContactName;
+            jobFromDB.ContactEmail = job.ContactEmail;
+            jobFromDB.ContactPhone = job.ContactPhone;
+            jobFromDB.ContactWebsite = job.ContactWebsite;
+            jobFromDB.Salary = job.Salary;
+            jobFromDB.StartDate = job.StartDate;
+            _context.SaveChanges();
+
+            return Ok("Inserat verändert");
+
         }
     }
 }

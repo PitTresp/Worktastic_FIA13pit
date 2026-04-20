@@ -115,6 +115,10 @@ namespace Worktastic.Controllers
                         jobFromDb.CompanyLogo = memoryStream.ToArray();
                     }
                 }
+
+                //jobFromDb.Ownername = jobPosting.OwnerName; nicht machen: weil Eigentümer wird im Nachhinein geändert,
+                //bei Rollen wird dann im schlimmsten Fall der admin als Eigentümer eingetragen
+
             }
             Console.WriteLine("SaveChanges wird jetzt ausgeführt");
             _context.SaveChanges();
@@ -140,23 +144,5 @@ namespace Worktastic.Controllers
 
             return Ok();
         }
-        //public IActionResult Delete(int id)
-        //{
-        //    if (id == 0)
-        //        return BadRequest();
-
-        //    var jobFromDb = _context.JobPosts.SingleOrDefault(x => x.Id == id);
-
-        //    if (jobFromDb == null)
-        //        return NotFound();
-
-        //    if (jobFromDb.OwnerName != User.Identity?.Name)
-        //        return Forbid();
-
-        //    _context.JobPosts.Remove(jobFromDb);
-        //    _context.SaveChanges();
-
-        //    return RedirectToAction("Index");
-        //}
     }
 }
