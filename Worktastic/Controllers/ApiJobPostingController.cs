@@ -85,6 +85,7 @@ namespace Worktastic.Controllers
             jobFromDB.ContactWebsite = job.ContactWebsite;
             jobFromDB.Salary = job.Salary;
             jobFromDB.StartDate = job.StartDate;
+
             _context.SaveChanges();
 
             return Ok("Inserat verändert");
