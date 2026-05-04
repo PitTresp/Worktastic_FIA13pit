@@ -46,13 +46,13 @@ namespace Worktastic.Controllers
         [HttpPost]
         public IActionResult CreateEdit(JobPosting jobPosting, IFormFile? companyLogoFile)
         {
-            Console.WriteLine("POST CreateEdit wurde erreicht");
-            Console.WriteLine($"Id: {jobPosting.Id}");
-            Console.WriteLine($"JobTitle: {jobPosting.JobTitle}");
-            Console.WriteLine($"JobLocation: {jobPosting.JobLocation}");
-            Console.WriteLine($"ContactName: {jobPosting.ContactName}");
-            Console.WriteLine($"ContactEmail: {jobPosting.ContactEmail}");
-            Console.WriteLine($"companyLogoFile null? {companyLogoFile == null}");
+            //Console.WriteLine("POST CreateEdit wurde erreicht");
+            //Console.WriteLine($"Id: {jobPosting.Id}");
+            //Console.WriteLine($"JobTitle: {jobPosting.JobTitle}");
+            //Console.WriteLine($"JobLocation: {jobPosting.JobLocation}");
+            //Console.WriteLine($"ContactName: {jobPosting.ContactName}");
+            //Console.WriteLine($"ContactEmail: {jobPosting.ContactEmail}");
+            //Console.WriteLine($"companyLogoFile null? {companyLogoFile == null}");
 
             jobPosting.OwnerName = User.Identity?.Name;
 
@@ -64,13 +64,13 @@ namespace Worktastic.Controllers
             if (!ModelState.IsValid)
 
             {
-                foreach (var entry in ModelState)
-                {
-                    foreach (var error in entry.Value.Errors)
-                    {
-                        Console.WriteLine($"{entry.Key}: {error.ErrorMessage}");
-                    }
-                }
+                //foreach (var entry in ModelState)
+                //{
+                //    foreach (var error in entry.Value.Errors)
+                //    {
+                //        Console.WriteLine($"{entry.Key}: {error.ErrorMessage}");
+                //    }
+                //}
 
                 return View("CreateEditForm", jobPosting);
             }
@@ -97,7 +97,7 @@ namespace Worktastic.Controllers
                     return NotFound();
                 }
 
-                if (jobFromDb.OwnerName != User.Identity?.Name)
+                if (jobFromDb.OwnerName != User.Identity?.Name && !User.IsInRole("Admin"))
                 {
                     return Forbid();
                 }
@@ -126,9 +126,9 @@ namespace Worktastic.Controllers
                 //bei Rollen wird dann im schlimmsten Fall der admin als Eigentümer eingetragen
 
             }
-            Console.WriteLine("SaveChanges wird jetzt ausgeführt");
+            //Console.WriteLine("SaveChanges wird jetzt ausgeführt");
             _context.SaveChanges();
-            Console.WriteLine("SaveChanges wurde ausgeführt");
+            //Console.WriteLine("SaveChanges wurde ausgeführt");
             return RedirectToAction("Index");
         }
         [HttpPost]
